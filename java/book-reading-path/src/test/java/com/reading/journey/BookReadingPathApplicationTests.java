@@ -1,4 +1,4 @@
-package com.book.path;
+package com.reading.journey;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

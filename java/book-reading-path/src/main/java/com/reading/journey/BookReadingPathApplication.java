@@ -1,4 +1,4 @@
-package com.book.path;
+package com.reading.journey;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
