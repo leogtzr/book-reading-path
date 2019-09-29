@@ -1,6 +1,7 @@
 package com.reading.journey.config;
 
 import com.reading.journey.batch.BookReadingProcessor;
+import com.reading.journey.batch.StringBuilderItemWriter;
 import com.reading.journey.domain.Book;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
@@ -57,8 +58,10 @@ public class BookConfig {
                         setNames(new String[]{
                                 "id",
                                 "title",
-                                "author"
+                                "author",
+                                "read"
                         });
+                        // setDelimiter(",");
                     }
                 });
                 setFieldSetMapper(new BeanWrapperFieldSetMapper<Book>() {
@@ -83,7 +86,8 @@ public class BookConfig {
                 .<Book, Book>chunk(1)
                 .reader(csvBookReader())
                 .processor(csvBookProcessor())
-                .writer(bookItemWriter())
+                .writer(stringBuilderItemWriter())
+                .allowStartIfComplete(true)
                 .build();
     }
 
@@ -93,6 +97,11 @@ public class BookConfig {
                 .start(csvFileTransformStep())
                 .build()
                 ;
+    }
+
+    @Bean
+    public StringBuilderItemWriter stringBuilderItemWriter() throws Exception {
+        return new StringBuilderItemWriter(htmlOutputFile());
     }
 
     @Bean
