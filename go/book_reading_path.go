@@ -31,10 +31,10 @@ const (
             .read {
                 border: solid 2px green;
                 border-bottom: 0;
-                margin: 1em 0;
+				margin: 1em 0;
             }
             .noread {
-                border: solid 2px read;
+                border: solid 2px red;
                 border-bottom: 0;
                 margin: 1em 0;
             }
@@ -66,9 +66,9 @@ func (b *Book) String() string {
 // HTML ...
 func (b *Book) HTML() string {
 	if b.read {
-		return fmt.Sprintf("<li class=\"read\">(%d) \"%s\" by %s</li>", b.id, b.title, b.author)
+		return fmt.Sprintf("<li class=\"read\">(%d) \"%s\" by <i>%s</i></li>", b.id, b.title, b.author)
 	}
-	return fmt.Sprintf("<li class=\"noread\">(%d) \"%s\" by %s</li>", b.id, b.title, b.author)
+	return fmt.Sprintf("<li class=\"noread\">(%d) \"%s\" by <i>%s</i></li>", b.id, b.title, b.author)
 }
 
 func numberOfReadBooks(books *[]Book) int {
@@ -79,6 +79,28 @@ func numberOfReadBooks(books *[]Book) int {
 		}
 	}
 	return read
+}
+
+func extractBookFromRecord(text string) (Book, error) {
+	fields := strings.Split(text, ",")
+	id, err := strconv.ParseInt(fields[0], 10, 64)
+	if err != nil {
+		return Book{}, err
+	}
+	read := false
+	if len(fields) > 3 {
+		read = true
+	}
+	if err != nil {
+		return Book{}, err
+	}
+	book := Book{
+		id:     int(id),
+		title:  fields[1],
+		author: fields[2],
+		read:   read,
+	}
+	return book, nil
 }
 
 func readInputFile(inputFile string) ([]Book, error) {
@@ -93,23 +115,9 @@ func readInputFile(inputFile string) ([]Book, error) {
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		text := scanner.Text()
-		fields := strings.Split(text, ",")
-		id, err := strconv.ParseInt(fields[0], 10, 64)
+		book, err := extractBookFromRecord(text)
 		if err != nil {
 			panic(err)
-		}
-		read := false
-		if len(fields) > 3 {
-			read = true
-		}
-		if err != nil {
-			panic(err)
-		}
-		book := Book{
-			id:     int(id),
-			title:  fields[1],
-			author: fields[2],
-			read:   read,
 		}
 		books = append(books, book)
 	}
