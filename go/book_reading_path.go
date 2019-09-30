@@ -117,7 +117,7 @@ func readInputFile(inputFile string) ([]Book, error) {
 		text := scanner.Text()
 		book, err := extractBookFromRecord(text)
 		if err != nil {
-			panic(err)
+			return nil, err
 		}
 		books = append(books, book)
 	}
